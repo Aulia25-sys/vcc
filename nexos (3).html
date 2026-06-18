@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexos — AI Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-peOJHEnvLsAmpoT1"></script>
+<style>
+:root{
+  --obsidian:#F4F7F6;
+  --glass:rgba(116,139,145,0.08);
+  --gold:#748B91;
+  --amber:#C1D1CF;
+  --warm-white:#171F22;
+  --muted:#536166;
+  --border:rgba(116,139,145,0.22);
+  --muted:#536166;
+  --gold:#748B91;
+  --warm-white:#171F22;
+  --card-bg:rgba(255,255,255,0.78);
+  --bg-primary:#F4F7F6;
+  --text-dark:#171F22;
+  --text-muted:#536166;
+  --accent-teal:#748B91;
+  --accent-olive:#666B64;
+  --accent-light:#C1D1CF;
+  --surface:rgba(255,255,255,0.92);
+  --surface-alt:rgba(193,209,207,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-primary);color:var(--text-dark);overflow-x:hidden}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ===== NAVBAR ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;backdrop-filter:blur(20px);background:rgba(244,247,246,0.88);border-bottom:1px solid var(--border);padding:0 6%}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:-.02em;color:var(--text-dark);cursor:pointer}
+.logo span{color:var(--accent-teal)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color .3s;cursor:pointer}
+.nav-links a:hover{color:var(--accent-teal)}
+.nav-cta{display:flex;gap:1rem;align-items:center}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dark);padding:.5rem 1.25rem;border-radius:8px;cursor:pointer;font-size:.875rem;font-weight:500;transition:all .3s;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{border-color:var(--accent-teal);color:var(--accent-teal)}
+.btn-gold{background:var(--text-dark);color:#F4F7F6;padding:.5rem 1.25rem;border-radius:8px;cursor:pointer;font-size:.875rem;font-weight:600;border:none;transition:all .3s;font-family:'DM Sans',sans-serif}
+.btn-gold:hover{background:var(--accent-teal);transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+#page-landing{padding-top:64px}
+.hero{position:relative;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;background:linear-gradient(160deg,#EEF2F1 0%,#F4F7F6 50%,#E8EFEE 100%)}
+#webgl-container{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.45}
+#webgl-canvas{width:100%;height:100%}
+.hero-content{position:relative;z-index:5;max-width:800px;padding:2rem}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.18em;color:var(--accent-teal);text-transform:uppercase;margin-bottom:1.5rem;font-weight:600}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:700;line-height:1.05;margin-bottom:1.5rem;letter-spacing:-.03em;color:var(--text-dark)}
+.hero-title span{color:var(--accent-teal)}
+.hero-sub{color:var(--text-muted);font-size:1.05rem;line-height:1.7;max-width:540px;margin:0 auto 2.5rem}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--text-dark);color:#F4F7F6;padding:.9rem 2.5rem;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600;border:none;transition:all .3s;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{background:var(--accent-teal);transform:translateY(-2px);box-shadow:0 8px 24px rgba(116,139,145,.25)}
+.btn-secondary{background:rgba(255,255,255,.7);border:1px solid var(--border);color:var(--text-dark);padding:.9rem 2.5rem;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:500;transition:all .3s;backdrop-filter:blur(10px);font-family:'DM Sans',sans-serif}
+.btn-secondary:hover{border-color:var(--accent-teal);background:white}
+
+/* ===== SECTIONS ===== */
+section{padding:6rem 6%}
+.section-label{font-size:.7rem;letter-spacing:.2em;color:var(--accent-teal);text-transform:uppercase;margin-bottom:1rem;font-weight:600}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1rem;letter-spacing:-.025em;color:var(--text-dark)}
+.section-sub{color:var(--text-muted);font-size:1rem;line-height:1.7;max-width:560px}
+
+/* ===== PROBLEMS ===== */
+.problems{background:linear-gradient(180deg,var(--bg-primary) 0%,rgba(232,239,238,1) 100%)}
+.problems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3rem}
+.problem-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;backdrop-filter:blur(10px)}
+.problem-icon{font-size:2rem;margin-bottom:1rem}
+.problem-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;margin-bottom:.75rem;color:var(--text-dark)}
+.problem-card p{color:var(--text-muted);font-size:.9rem;line-height:1.65}
+
+/* ===== FEATURES SCROLL-CHOREOGRAPHY ===== */
+.features-section{position:relative;padding:0}
+.features-sticky{position:sticky;top:64px;height:calc(100vh - 64px);overflow:hidden;display:flex;align-items:stretch}
+.features-scroll-track{height:500vh}
+.feature-image-pane{flex:0 0 50%;position:relative;overflow:hidden}
+.feature-image-pane img,.feature-image-full{width:100%;height:100%;object-fit:cover}
+.feature-text-pane{flex:1;display:flex;flex-direction:column;justify-content:center;padding:4rem 4rem;opacity:0;transition:opacity .5s;background:var(--bg-primary)}
+.feature-text-pane.visible{opacity:1}
+.feature-img-overlay{position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,var(--bg-primary));pointer-events:none}
+.feat-num{font-family:'DM Mono',monospace;font-size:3rem;font-weight:500;color:rgba(116,139,145,.2);line-height:1;margin-bottom:.5rem}
+.feat-title{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;margin-bottom:1rem;letter-spacing:-.025em;color:var(--text-dark)}
+.feat-desc{color:var(--text-muted);line-height:1.75;font-size:1rem;max-width:400px}
+.feat-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+.feat-tag{background:rgba(116,139,145,.1);border:1px solid rgba(116,139,145,.25);color:var(--accent-teal);font-size:.75rem;padding:.3rem .8rem;border-radius:20px;letter-spacing:.05em;font-weight:500}
+
+/* full-screen feature reveal */
+.feature-full{position:absolute;inset:0;transition:opacity .6s,transform .6s;opacity:0;transform:scale(1.05)}
+.feature-full.show{opacity:1;transform:scale(1)}
+.feature-full img{width:100%;height:100%;object-fit:cover}
+.feature-full-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(244,247,246,.7) 0%,transparent 60%)}
+
+/* ===== SOCIAL PROOF SPIRAL ===== */
+.social-proof-section{position:relative;height:100vh;overflow:hidden;background:var(--bg-primary)}
+#spiral-container{position:absolute;inset:0;z-index:1}
+#spiral-canvas{width:100%;height:100%}
+.spiral-overlay{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.spiral-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;text-align:center;margin-bottom:.5rem;color:var(--text-dark);letter-spacing:-.02em}
+.spiral-sub{color:var(--text-muted);font-size:.9rem;text-align:center}
+#spiral-credits{position:absolute;bottom:20px;left:20px;background:rgba(244,247,246,.9);padding:8px 12px;border-radius:6px;color:var(--text-dark);font-size:13px;z-index:6;pointer-events:auto;border:1px solid var(--border)}
+#spiral-credits a{color:var(--accent-teal);text-decoration:none}
+#spiral-credits a:hover{color:var(--text-dark);transition:all 1s ease}
+#spiral-label{position:absolute;top:20px;right:20px;background:rgba(244,247,246,.9);padding:8px 12px;border-radius:6px;color:var(--text-dark);font-family:'Space Grotesk',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.4em;text-align:right;z-index:6;border:1px solid var(--border);letter-spacing:.06em}
+.spiral-info{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;background:var(--surface);padding:8px 14px;border-radius:8px;font-size:13px;color:var(--text-dark);cursor:pointer;z-index:6;border:1px solid var(--border)}
+@media(max-width:768px){#spiral-label{display:none}}
+
+/* ===== CATALOG / PRICING ===== */
+.catalog{background:rgba(235,241,240,1)}
+.catalog-tabs{display:flex;gap:.5rem;margin-bottom:3rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.5rem;width:fit-content}
+.tab-btn{background:transparent;border:none;color:var(--text-muted);padding:.6rem 1.5rem;border-radius:8px;cursor:pointer;font-size:.875rem;font-weight:500;transition:all .3s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{background:var(--text-dark);color:#F4F7F6;font-weight:600}
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:900px){.catalog-grid{grid-template-columns:1fr}}
+.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .4s;backdrop-filter:blur(10px)}
+.plan-card:hover{border-color:var(--accent-teal);transform:translateY(-4px);box-shadow:0 20px 60px rgba(116,139,145,.12)}
+.plan-card.featured{border-color:var(--accent-teal);background:linear-gradient(135deg,rgba(116,139,145,.06),rgba(193,209,207,.08))}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--text-dark);color:#F4F7F6;font-size:.7rem;font-weight:700;padding:.3rem 1rem;border-radius:20px;letter-spacing:.08em}
+.plan-tier{font-size:.7rem;color:var(--accent-teal);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.5rem;font-weight:600}
+.plan-name{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.5rem;color:var(--text-dark);letter-spacing:-.02em}
+.plan-price{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;margin-bottom:.25rem;color:var(--text-dark);letter-spacing:-.03em}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--text-muted)}
+.plan-period{color:var(--text-muted);font-size:.8rem;margin-bottom:1.5rem}
+.plan-features{list-style:none;margin-bottom:2rem}
+.plan-features li{padding:.5rem 0;border-bottom:1px solid rgba(116,139,145,.1);font-size:.875rem;color:var(--text-muted);display:flex;align-items:center;gap:.75rem}
+.plan-features li::before{content:'✦';color:var(--accent-teal);font-size:.6rem}
+.catalog-pane{display:none}
+.catalog-pane.active{display:block}
+
+/* ===== ORBIT CARD STACK (subscriptions) ===== */
+.orbit-section{background:linear-gradient(180deg,rgba(235,241,240,1) 0%,var(--bg-primary) 100%);padding:6rem 0}
+.orbit-stage{position:relative;display:flex;min-height:520px;width:100%;align-items:center;justify-content:center;overflow:hidden;padding:2rem}
+.orbit-inner{position:relative;height:470px;width:100%;max-width:980px}
+.orbit-card{position:absolute;left:50%;top:50%;width:min(78vw,21rem);origin:bottom;cursor:pointer;border-radius:1.9rem;border:1px solid var(--border);background:var(--surface);padding:1rem;color:var(--text-dark);outline:none;transform-origin:bottom center}
+.orbit-card:hover{z-index:80!important}
+.orbit-portrait{position:relative;aspect-ratio:1.36;width:100%;overflow:hidden;border-radius:1.45rem;border:1px solid var(--border);background:rgba(116,139,145,.08)}
+.orbit-portrait img{width:100%;height:100%;object-fit:cover}
+.orbit-badge{position:absolute;bottom:1rem;right:1rem;border-radius:9999px;background:var(--surface);padding:.25rem .75rem;font-size:.72rem;font-weight:700;letter-spacing:.18em;color:var(--accent-teal)}
+.orbit-body{padding:.5rem .5rem .5rem}
+.orbit-role{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--accent-teal);margin-bottom:.5rem;margin-top:1.5rem}
+.orbit-name{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--text-dark)}
+.orbit-desc{margin-top:.75rem;font-size:.9rem;line-height:1.5;color:var(--text-muted);max-width:17rem}
+.orbit-footer{margin-top:1rem;border-top:1px solid var(--border);padding-top:.75rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:var(--text-muted)}
+.orbit-arrow{position:absolute;right:.75rem;top:.75rem;width:2.75rem;height:2.75rem;border-radius:50%;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;color:var(--accent-teal)}
+
+/* ===== CONTACT FORM ===== */
+.contact-section{background:rgba(232,239,238,1)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+@media(max-width:768px){.contact-grid{grid-template-columns:1fr}}
+.form-group{margin-bottom:1.25rem}
+.form-group label{display:block;font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem;letter-spacing:.05em;font-weight:500}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;color:var(--text-dark);font-size:.9rem;transition:border-color .3s;font-family:'DM Sans',sans-serif}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--accent-teal)}
+.form-group textarea{resize:vertical;min-height:120px}
+.form-group select option{background:white;color:var(--text-dark)}
+
+/* ===== FOOTER ===== */
+footer{background:var(--text-dark);border-top:1px solid rgba(255,255,255,.08);padding:3rem 6% 2rem;color:#C1D1CF}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr}}
+.footer-brand p{color:rgba(193,209,207,.7);font-size:.875rem;line-height:1.7;margin-top:.75rem;max-width:300px}
+.footer-col h4{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);margin-bottom:1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:.6rem}
+.footer-col a{color:rgba(193,209,207,.65);text-decoration:none;font-size:.875rem;transition:color .3s;cursor:pointer}
+.footer-col a:hover{color:var(--accent-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-bottom p{color:rgba(193,209,207,.5);font-size:.8rem}
+.social-links{display:flex;gap:1rem}
+.social-links a{width:36px;height:36px;border:1px solid rgba(255,255,255,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;color:rgba(193,209,207,.6);text-decoration:none;transition:all .3s}
+.social-links a:hover{border-color:var(--accent-light);color:var(--accent-light)}
+.footer-dev{color:rgba(193,209,207,.5);font-size:.8rem}
+.footer-dev span{color:var(--accent-light)}
+.unila-logo{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:var(--accent-light)}
+.logo-footer{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:-.02em;color:#F4F7F6}
+
+/* ===== AUTH PAGES ===== */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(193,209,207,.2) 0%,var(--bg-primary) 50%,rgba(116,139,145,.08) 100%)}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:100%;max-width:460px;backdrop-filter:blur(20px);box-shadow:0 16px 48px rgba(116,139,145,.1)}
+.auth-box h2{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;margin-bottom:.5rem;color:var(--text-dark);letter-spacing:-.025em}
+.auth-box p{color:var(--text-muted);font-size:.9rem;margin-bottom:2rem}
+.auth-divider{text-align:center;color:var(--text-muted);font-size:.8rem;margin:1rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}
+.auth-divider::after{right:0}
+.auth-link{color:var(--accent-teal);cursor:pointer;text-decoration:none;font-weight:500}
+.auth-link:hover{text-decoration:underline}
+.forgot-link{color:var(--text-muted);font-size:.8rem;cursor:pointer;float:right;margin-top:.25rem}
+.forgot-link:hover{color:var(--accent-teal)}
+
+/* ===== USER DASHBOARD ===== */
+.dashboard-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;padding-top:64px}
+@media(max-width:900px){.dashboard-layout{grid-template-columns:1fr}}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:2rem 1.5rem;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+@media(max-width:900px){.sidebar{display:none}}
+.sidebar-menu{list-style:none;margin-top:1.5rem}
+.sidebar-menu li{margin-bottom:.25rem}
+.sidebar-menu a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:10px;color:var(--text-muted);text-decoration:none;font-size:.875rem;font-weight:500;transition:all .3s;cursor:pointer}
+.sidebar-menu a:hover,.sidebar-menu a.active{background:rgba(116,139,145,.1);color:var(--accent-teal)}
+.sidebar-menu .icon{font-size:1rem}
+.main-content{padding:2.5rem;background:var(--bg-primary)}
+.content-header{margin-bottom:2rem}
+.content-header h1{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;color:var(--text-dark);letter-spacing:-.025em}
+.content-header p{color:var(--text-muted);font-size:.9rem;margin-top:.25rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;backdrop-filter:blur(10px)}
+.stat-label{font-size:.75rem;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;font-weight:600}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--text-dark)}
+.stat-sub{font-size:.8rem;color:var(--text-muted);margin-top:.25rem}
+.subscription-card{background:var(--surface);border:1px solid var(--accent-teal);border-radius:20px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+.subscription-card::before{content:'';position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(116,139,145,.06) 0%,transparent 70%);pointer-events:none}
+.sub-tier-badge{display:inline-block;background:var(--text-dark);color:#F4F7F6;font-size:.7rem;font-weight:700;padding:.3rem .8rem;border-radius:20px;letter-spacing:.08em;margin-bottom:1rem}
+.countdown-ring{display:flex;gap:1rem;margin-top:1.5rem}
+.count-unit{text-align:center;background:rgba(116,139,145,.08);border:1px solid rgba(116,139,145,.2);border-radius:12px;padding:.75rem 1rem;min-width:70px}
+.count-num{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent-teal)}
+.count-label{font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.progress-bar{height:6px;background:rgba(116,139,145,.12);border-radius:3px;margin-top:1rem;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-teal),var(--accent-light));border-radius:3px;transition:width .5s}
+.plan-features-mini{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.mini-tag{background:rgba(116,139,145,.08);border:1px solid rgba(116,139,145,.18);color:var(--accent-teal);font-size:.72rem;padding:.25rem .65rem;border-radius:12px;font-weight:500}
+
+/* Plan tier colors */
+.tier-starter .sub-tier-badge{background:linear-gradient(135deg,#6b7280,#4b5563);color:#fff}
+.tier-pro .sub-tier-badge{background:var(--text-dark);color:#F4F7F6}
+.tier-enterprise .sub-tier-badge{background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff}
+
+/* ===== ADMIN DASHBOARD ===== */
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2rem}
+.admin-table{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.admin-table-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
+.admin-table-header h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text-dark)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:.75rem 1.25rem;font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);font-weight:600}
+td{padding:.85rem 1.25rem;font-size:.85rem;border-bottom:1px solid rgba(116,139,145,.08);color:var(--text-dark)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(116,139,145,.04)}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.7rem;font-weight:600}
+.badge-active{background:rgba(34,197,94,.1);color:#16a34a}
+.badge-expired{background:rgba(239,68,68,.1);color:#ef4444}
+.badge-pending{background:rgba(116,139,145,.12);color:var(--accent-teal)}
+.search-bar{display:flex;gap:.75rem;margin-bottom:1.5rem}
+.search-bar input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;color:var(--text-dark);font-size:.875rem;font-family:'DM Sans',sans-serif}
+.search-bar input:focus{outline:none;border-color:var(--accent-teal)}
+.chart-area{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.chart-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;color:var(--text-dark)}
+.chart-bar-row{display:flex;align-items:center;gap:1rem;margin-bottom:.75rem}
+.chart-month{width:40px;font-size:.75rem;color:var(--text-muted)}
+.chart-bar-wrap{flex:1;height:28px;background:rgba(116,139,145,.08);border-radius:6px;overflow:hidden}
+.chart-bar{height:100%;background:linear-gradient(90deg,var(--accent-teal),var(--accent-light));border-radius:6px;display:flex;align-items:center;padding-left:.5rem;font-size:.72rem;color:var(--text-dark);font-weight:600;transition:width 1s}
+.chart-val{font-size:.8rem;color:var(--text-muted);width:80px;text-align:right}
+.time-filters{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.tf-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:.35rem .85rem;border-radius:8px;cursor:pointer;font-size:.78rem;transition:all .3s;font-family:'DM Sans',sans-serif}
+.tf-btn.active{background:rgba(116,139,145,.12);border-color:var(--accent-teal);color:var(--accent-teal)}
+.datetime-display{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--accent-teal);background:rgba(116,139,145,.08);border:1px solid rgba(116,139,145,.2);padding:.5rem 1rem;border-radius:10px}
+
+/* ===== PAYMENT PAGE ===== */
+.payment-page{min-height:100vh;padding-top:64px;background:linear-gradient(135deg,rgba(193,209,207,.15) 0%,var(--bg-primary) 50%,rgba(116,139,145,.06) 100%)}
+.payment-container{max-width:860px;margin:3rem auto;padding:0 1.5rem}
+.payment-steps{display:flex;gap:1rem;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.step{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-muted);font-weight:500}
+.step.active{color:var(--accent-teal)}
+.step-num{width:24px;height:24px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
+.step.active .step-num{background:var(--accent-teal);color:white;border-color:var(--accent-teal)}
+.step-sep{flex:1;height:1px;background:var(--border)}
+.payment-grid{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start}
+@media(max-width:768px){.payment-grid{grid-template-columns:1fr}}
+.payment-form-card,.payment-summary{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.75rem;backdrop-filter:blur(10px)}
+.payment-form-card h3,.payment-summary h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.5rem;color:var(--text-dark)}
+.method-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem}
+.method-card{background:var(--bg-primary);border:1px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .3s;text-align:center}
+.method-card:hover,.method-card.selected{border-color:var(--accent-teal);background:rgba(116,139,145,.06)}
+.method-icon{font-size:1.5rem;margin-bottom:.4rem}
+.method-name{font-size:.78rem;font-weight:600;color:var(--text-dark)}
+.method-sub{font-size:.7rem;color:var(--text-muted)}
+.payment-instructions{background:rgba(116,139,145,.06);border:1px solid rgba(116,139,145,.2);border-radius:12px;padding:1.25rem;margin-top:1rem}
+.payment-instructions h4{font-size:.85rem;font-weight:700;color:var(--accent-teal);margin-bottom:.75rem}
+.instruction-step{display:flex;gap:.75rem;margin-bottom:.6rem;font-size:.83rem;color:var(--text-muted)}
+.instruction-step span{color:var(--accent-teal);font-weight:700;min-width:20px}
+.qris-box{text-align:center;padding:1.5rem;border:2px dashed var(--accent-teal);border-radius:16px;margin-top:1rem}
+.qris-code{width:160px;height:160px;background:white;margin:0 auto 1rem;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:4rem;border:1px solid var(--border)}
+.summary-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(116,139,145,.1);font-size:.875rem;color:var(--text-dark)}
+.summary-row:last-of-type{border-bottom:none}
+.summary-row.total{font-weight:700;color:var(--accent-teal);font-size:1rem;padding-top:.75rem}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(23,31,34,.4);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:2rem;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 48px rgba(116,139,145,.15)}
+.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:.5rem;color:var(--text-dark)}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer}
+
+/* ===== UTILS ===== */
+.text-gold{color:var(--accent-teal)}
+.text-muted{color:var(--text-muted)}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}.mt-4{margin-top:2rem}
+.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}
+.flex{display:flex}.items-center{align-items:center}.gap-1{gap:.5rem}.gap-2{gap:1rem}
+.justify-between{justify-content:space-between}
+.w-full{width:100%}
+.alert{padding:.75rem 1rem;border-radius:10px;font-size:.875rem;margin-bottom:1rem}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#ef4444}
+.alert-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#16a34a}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(116,139,145,.2);border-top-color:var(--accent-teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ===== ADMIN SIDEBAR DISTINCT STYLE ===== */
+#page-admin .sidebar{background:var(--text-dark);border-right:1px solid rgba(255,255,255,.08)}
+#page-admin .sidebar .logo{color:#F4F7F6}
+#page-admin .sidebar-menu a{color:rgba(193,209,207,.65)}
+#page-admin .sidebar-menu a:hover,#page-admin .sidebar-menu a.active{background:rgba(116,139,145,.15);color:var(--accent-light)}
+#page-admin .main-content{background:#F2F5F4}
+</style>
+</head>
+<body>
+
+
+<!-- ===== NAVIGATION ===== -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="logo" onclick="showPage('landing')">NEXOS</div>
+    <ul class="nav-links" id="nav-menu">
+      <li><a onclick="scrollToSection('features')">Fitur</a></li>
+      <li><a onclick="scrollToSection('catalog')">Katalog</a></li>
+      <li><a onclick="scrollToSection('contact')">Kontak</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-ghost" onclick="showPage('login')">Masuk</button>
+      <button class="btn-gold" onclick="showPage('register')">Mulai Gratis</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGE: LANDING ===== -->
+<div id="page-landing" class="page active">
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div id="webgl-container"><canvas id="webgl-canvas"></canvas></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Platform AI Bisnis Terintegrasi</div>
+      <h1 class="hero-title">Otomasi Bisnis<br>Era <span>Kecerdasan Buatan</span></h1>
+      <p class="hero-sub">Nexos menghadirkan ekosistem AI mutakhir dalam arsitektur virtual 3D imersif—dari chatbot cerdas, analitik prediktif, hingga Vision AI untuk transformasi digital bisnis Anda.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="showPage('register')">Mulai Sekarang</button>
+        <button class="btn-secondary" onclick="scrollToSection('features')">Jelajahi Fitur</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMS -->
+  <section class="problems" id="problems">
+    <div style="text-align:center;max-width:600px;margin:0 auto 3rem">
+      <div class="section-label">Masalah yang Kami Selesaikan</div>
+      <h2 class="section-title">Bisnis modern menghadapi hambatan nyata</h2>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card"><div class="problem-icon">⏱️</div><h3>Proses Manual yang Lambat</h3><p>Tim Anda menghabiskan 70% waktu pada tugas repetitif yang bisa diotomasi, memperlambat pertumbuhan bisnis.</p></div>
+      <div class="problem-card"><div class="problem-icon">📊</div><h3>Data Tidak Terstruktur</h3><p>Volume data terus bertumbuh namun sulit diekstrak menjadi insight yang actionable untuk keputusan strategis.</p></div>
+      <div class="problem-card"><div class="problem-icon">🤖</div><h3>Layanan Pelanggan 24/7</h3><p>Tim support kewalahan dengan volume pertanyaan yang terus meningkat tanpa solusi yang skalabel.</p></div>
+      <div class="problem-card"><div class="problem-icon">👁️</div><h3>Pengenalan Visual Terbatas</h3><p>Proses verifikasi dokumen dan pengenalan objek masih dilakukan manual, rawan error dan lambat.</p></div>
+      <div class="problem-card"><div class="problem-icon">🔗</div><h3>Sistem yang Terfragmentasi</h3><p>Tool yang berbeda-beda tidak terintegrasi, menciptakan silo data dan menghambat efisiensi operasional.</p></div>
+      <div class="problem-card"><div class="problem-icon">💸</div><h3>Biaya Infrastruktur Tinggi</h3><p>Membangun kapabilitas AI in-house membutuhkan investasi besar dalam talent dan infrastruktur teknis.</p></div>
+    </div>
+  </section>
+
+  <!-- FEATURES SCROLL CHOREOGRAPHY -->
+  <div id="features" class="features-scroll-track" style="position:relative">
+    <div class="features-sticky" id="featureSticky">
+      <div class="feature-image-pane" id="featureImgPane">
+        <img id="featureImg" src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80" alt="AI Feature" style="width:100%;height:100%;object-fit:cover;transition:opacity .5s">
+        <div class="feature-img-overlay"></div>
+      </div>
+      <div class="feature-text-pane visible" id="featureText">
+        <div class="feat-num" id="featNum">01</div>
+        <h2 class="feat-title" id="featTitle">Chatbot AI Cerdas</h2>
+        <p class="feat-desc" id="featDesc">Layani pelanggan 24/7 dengan chatbot berbasis NLP canggih yang memahami konteks, belajar dari setiap interaksi, dan menjawab dalam Bahasa Indonesia secara natural.</p>
+        <div class="feat-tags" id="featTags">
+          <span class="feat-tag">NLP</span><span class="feat-tag">Multi-channel</span><span class="feat-tag">Auto-learning</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL PROOF SPIRAL -->
+  <section class="social-proof-section" id="socialProof">
+    <div id="spiral-container"><canvas id="spiral-canvas"></canvas></div>
+    <div id="spiral-credits">All images come from <a href="https://unsplash.com" target="_blank">Unsplash.com</a></div>
+    <div id="spiral-label">nexos<br>ai</div>
+    <div class="spiral-info" id="spiralInfo" onclick="this.style.display='none'">scroll | drag — Click to hide</div>
+    <div class="spiral-overlay">
+      <div class="spiral-title">Dipercaya ribuan bisnis di seluruh Indonesia</div>
+      <div class="spiral-sub" style="margin-top:.5rem">Bergabung dengan ekosistem AI terdepan</div>
+      <div style="display:flex;gap:3rem;margin-top:2rem;flex-wrap:wrap;justify-content:center">
+        <div style="text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:800;color:var(--gold)">2.4K+</div><div style="color:var(--muted);font-size:.85rem">Pengguna Aktif</div></div>
+        <div style="text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:800;color:var(--gold)">98.7%</div><div style="color:var(--muted);font-size:.85rem">Uptime SLA</div></div>
+        <div style="text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:800;color:var(--gold)">12M+</div><div style="color:var(--muted);font-size:.85rem">Transaksi AI</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG / PRICING -->
+  <section class="catalog" id="catalog">
+    <div class="section-label">Katalog Produk</div>
+    <h2 class="section-title">Pilih solusi yang tepat<br>untuk bisnis Anda</h2>
+    <p class="section-sub mt-2 mb-4">Tiga kategori layanan AI dengan tiga tingkatan spesifikasi, dirancang untuk skala bisnis apapun.</p>
+    <div class="catalog-tabs">
+      <button class="tab-btn active" onclick="switchTab('chatbot')">🤖 AI Chatbot</button>
+      <button class="tab-btn" onclick="switchTab('analytics')">📊 Data Analytics</button>
+      <button class="tab-btn" onclick="switchTab('vision')">👁️ Vision AI</button>
+    </div>
+
+    <div id="tab-chatbot" class="catalog-pane active">
+      <div class="catalog-grid">
+        <div class="plan-card">
+          <div class="plan-tier">Chatbot Starter</div>
+          <div class="plan-name">Nexos Chat Lite</div>
+          <div class="plan-price">Rp 299K<span>/bln</span></div>
+          <div class="plan-period">2GB RAM · 3 Bulan min.</div>
+          <ul class="plan-features">
+            <li>1 channel (WhatsApp/Web)</li><li>1.000 percakapan/bln</li><li>Template respons bawaan</li><li>Dashboard analitik dasar</li><li>Support email</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Chat Lite','299000','3')">Pilih Paket</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">TERPOPULER</div>
+          <div class="plan-tier">Chatbot Pro</div>
+          <div class="plan-name">Nexos Chat Pro</div>
+          <div class="plan-price">Rp 799K<span>/bln</span></div>
+          <div class="plan-period">8GB RAM · 6 Bulan min.</div>
+          <ul class="plan-features">
+            <li>3 channel multi-platform</li><li>10.000 percakapan/bln</li><li>NLP custom training</li><li>Integrasi CRM & API</li><li>Analytics lanjutan</li><li>Support prioritas 24/7</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Chat Pro','799000','6')">Pilih Paket</button>
+        </div>
+        <div class="plan-card">
+          <div class="plan-tier">Chatbot Enterprise</div>
+          <div class="plan-name">Nexos Chat Enterprise</div>
+          <div class="plan-price">Rp 1.999K<span>/bln</span></div>
+          <div class="plan-period">32GB RAM · 12 Bulan min.</div>
+          <ul class="plan-features">
+            <li>Unlimited channel</li><li>Unlimited percakapan</li><li>Model AI khusus klien</li><li>On-premise deployment</li><li>SLA 99.9% uptime</li><li>Dedicated account manager</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Chat Enterprise','1999000','12')">Pilih Paket</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-analytics" class="catalog-pane">
+      <div class="catalog-grid">
+        <div class="plan-card">
+          <div class="plan-tier">Analytics Starter</div>
+          <div class="plan-name">Nexos Analytics Lite</div>
+          <div class="plan-price">Rp 399K<span>/bln</span></div>
+          <div class="plan-period">4GB RAM · 3 Bulan min.</div>
+          <ul class="plan-features">
+            <li>5 sumber data</li><li>100K baris/bln</li><li>Dashboard visual bawaan</li><li>Export CSV/Excel</li><li>Support email</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Analytics Lite','399000','3')">Pilih Paket</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">TERPOPULER</div>
+          <div class="plan-tier">Analytics Pro</div>
+          <div class="plan-name">Nexos Analytics Pro</div>
+          <div class="plan-price">Rp 999K<span>/bln</span></div>
+          <div class="plan-period">16GB RAM · 6 Bulan min.</div>
+          <ul class="plan-features">
+            <li>Unlimited sumber data</li><li>10M baris/bln</li><li>Prediktif AI & forecasting</li><li>Custom dashboard builder</li><li>API akses penuh</li><li>Support prioritas</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Analytics Pro','999000','6')">Pilih Paket</button>
+        </div>
+        <div class="plan-card">
+          <div class="plan-tier">Analytics Enterprise</div>
+          <div class="plan-name">Nexos Analytics Enterprise</div>
+          <div class="plan-price">Rp 2.499K<span>/bln</span></div>
+          <div class="plan-period">64GB RAM · 12 Bulan min.</div>
+          <ul class="plan-features">
+            <li>Data warehouse terintegrasi</li><li>Unlimited baris data</li><li>Model ML khusus</li><li>Real-time streaming analytics</li><li>Compliance & data governance</li><li>Dedicated data engineer</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Analytics Enterprise','2499000','12')">Pilih Paket</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-vision" class="catalog-pane">
+      <div class="catalog-grid">
+        <div class="plan-card">
+          <div class="plan-tier">Vision Starter</div>
+          <div class="plan-name">Nexos Vision Lite</div>
+          <div class="plan-price">Rp 499K<span>/bln</span></div>
+          <div class="plan-period">4GB RAM · 3 Bulan min.</div>
+          <ul class="plan-features">
+            <li>5.000 gambar/bln</li><li>Pengenalan objek dasar</li><li>OCR dokumen</li><li>REST API</li><li>Support email</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Vision Lite','499000','3')">Pilih Paket</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">TERPOPULER</div>
+          <div class="plan-tier">Vision Pro</div>
+          <div class="plan-name">Nexos Vision Pro</div>
+          <div class="plan-price">Rp 1.299K<span>/bln</span></div>
+          <div class="plan-period">16GB RAM · 6 Bulan min.</div>
+          <ul class="plan-features">
+            <li>100.000 gambar/bln</li><li>Face recognition</li><li>Video stream analysis</li><li>Custom model training</li><li>Webhook real-time</li><li>Support prioritas 24/7</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Vision Pro','1299000','6')">Pilih Paket</button>
+        </div>
+        <div class="plan-card">
+          <div class="plan-tier">Vision Enterprise</div>
+          <div class="plan-name">Nexos Vision Enterprise</div>
+          <div class="plan-price">Rp 2.999K<span>/bln</span></div>
+          <div class="plan-period">32GB RAM · 12 Bulan min.</div>
+          <ul class="plan-features">
+            <li>Unlimited gambar & video</li><li>Multi-model ensemble</li><li>Edge AI deployment</li><li>Anomaly detection lanjutan</li><li>SLA 99.9%</li><li>Dedicated ML engineer</li>
+          </ul>
+          <button class="btn-gold w-full" onclick="selectPlan('Nexos Vision Enterprise','2999000','12')">Pilih Paket</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact">
+    <div class="contact-grid">
+      <div>
+        <div class="section-label">Hubungi Kami</div>
+        <h2 class="section-title">Siap transformasi<br>bisnis Anda?</h2>
+        <p class="section-sub mt-2">Tim ahli kami siap membantu Anda merancang solusi AI yang tepat. Konsultasi gratis, tanpa komitmen.</p>
+        <div style="margin-top:2rem;display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="color:var(--gold)">📧</span><span style="color:var(--muted);font-size:.9rem">hello@nexos.ai</span></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="color:var(--gold)">📱</span><span style="color:var(--muted);font-size:.9rem">+62 812-0000-NEXOS</span></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="color:var(--gold)">📍</span><span style="color:var(--muted);font-size:.9rem">Universitas Lampung, Bandar Lampung</span></div>
+        </div>
+      </div>
+      <div>
+        <div id="contactAlert"></div>
+        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="contactName" placeholder="John Doe"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="contactEmail" placeholder="john@company.com"></div>
+        <div class="form-group"><label>Perusahaan</label><input type="text" id="contactCompany" placeholder="PT. Maju Bersama"></div>
+        <div class="form-group"><label>Layanan yang diminati</label>
+          <select id="contactService">
+            <option value="">Pilih layanan...</option>
+            <option>AI Chatbot</option><option>Data Analytics</option><option>Vision AI</option><option>Custom Enterprise</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Pesan</label><textarea id="contactMsg" placeholder="Ceritakan kebutuhan bisnis Anda..."></textarea></div>
+        <button class="btn-gold w-full" onclick="submitContact()" style="padding:1rem">Kirim Pesan</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-footer">NEXOS</div>
+        <p>Platform SaaS AI terintegrasi untuk transformasi digital bisnis modern. Dibangun dengan teknologi mutakhir untuk masa depan bisnis Indonesia.</p>
+        <div style="margin-top:1.25rem"><div class="unila-logo">🎓 Universitas Lampung</div></div>
+      </div>
+      <div class="footer-col"><h4>Produk</h4><ul><li><a onclick="switchTab('chatbot');scrollToSection('catalog')">AI Chatbot</a></li><li><a onclick="switchTab('analytics');scrollToSection('catalog')">Data Analytics</a></li><li><a onclick="switchTab('vision');scrollToSection('catalog')">Vision AI</a></li><li><a>Enterprise</a></li></ul></div>
+      <div class="footer-col"><h4>Perusahaan</h4><ul><li><a>Tentang Kami</a></li><li><a>Blog</a></li><li><a>Karir</a></li><li><a onclick="scrollToSection('contact')">Kontak</a></li></ul></div>
+      <div class="footer-col"><h4>Dukungan</h4><ul><li><a>Dokumentasi</a></li><li><a>API Reference</a></li><li><a>Status System</a></li><li><a>Kebijakan Privasi</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div>
+        <p class="footer-dev">Dikembangkan oleh <span>Aulia Anggi Rakha</span> · VCC — Nexos AI Platform</p>
+        <p style="color:var(--muted);font-size:.75rem;margin-top:.25rem">© 2025 Nexos. All rights reserved.</p>
+      </div>
+      <div class="social-links">
+        <a href="https://github.com" target="_blank" title="GitHub">⌥</a>
+        <a href="https://instagram.com" target="_blank" title="Instagram">◎</a>
+        <a href="https://linkedin.com" target="_blank" title="LinkedIn">in</a>
+        <a href="https://twitter.com" target="_blank" title="Twitter/X">𝕏</a>
+      </div>
+    </div>
+  </footer>
+</div><!-- end page-landing -->
+
+
+<!-- ===== PAGE: LOGIN ===== -->
+<div id="page-login" class="page">
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="logo" style="margin-bottom:1.5rem;display:block;font-size:1.8rem" onclick="showPage('landing')">NEXOS</div>
+      <h2>Selamat Datang Kembali</h2>
+      <p>Masuk ke akun Nexos Anda</p>
+      <div id="loginAlert"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="email@contoh.com" oninput="clearAlert('loginAlert')"></div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" oninput="clearAlert('loginAlert')">
+        <span class="forgot-link" onclick="showForgotModal()">Lupa password?</span>
+      </div>
+      <button class="btn-gold w-full mt-3" style="padding:.9rem" onclick="doLogin()">Masuk</button>
+      <div class="auth-divider mt-2">atau</div>
+      <p style="text-align:center;font-size:.875rem;color:var(--muted);margin-top:.75rem">Belum punya akun? <a class="auth-link" onclick="showPage('register')">Daftar sekarang</a></p>
+      <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-top:.5rem"><a class="auth-link" onclick="showPage('landing')">← Kembali ke beranda</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeForgotModal()">×</button>
+    <h3>Reset Password</h3>
+    <p style="color:var(--muted);font-size:.875rem;margin:.5rem 0 1.5rem">Masukkan email Anda dan kami akan mengirimkan tautan reset password.</p>
+    <div id="forgotAlert"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="forgotEmail" placeholder="email@contoh.com"></div>
+    <button class="btn-gold w-full" style="padding:.85rem" onclick="doForgotPassword()">Kirim Tautan Reset</button>
+  </div>
+</div>
+
+<!-- ===== PAGE: REGISTER ===== -->
+<div id="page-register" class="page">
+  <div class="auth-page">
+    <div class="auth-box" style="max-width:520px">
+      <div class="logo" style="margin-bottom:1.5rem;display:block;font-size:1.8rem" onclick="showPage('landing')">NEXOS</div>
+      <h2>Buat Akun Baru</h2>
+      <p>Mulai perjalanan AI Anda bersama Nexos</p>
+      <div id="registerAlert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group"><label>Nama Depan</label><input type="text" id="regFirstName" placeholder="Aulia"></div>
+        <div class="form-group"><label>Nama Belakang</label><input type="text" id="regLastName" placeholder="Anggi"></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="email@contoh.com"></div>
+      <div class="form-group"><label>Nomor Telepon</label><input type="tel" id="regPhone" placeholder="+62 812 xxxx xxxx"></div>
+      <div class="form-group"><label>Nama Perusahaan</label><input type="text" id="regCompany" placeholder="PT. Nexos Indonesia"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="regPass" placeholder="Min. 8 karakter"></div>
+      <div class="form-group"><label>Konfirmasi Password</label><input type="password" id="regPassConfirm" placeholder="Ulangi password"></div>
+      <button class="btn-gold w-full mt-2" style="padding:.9rem" onclick="doRegister()">Buat Akun</button>
+      <p style="text-align:center;font-size:.875rem;color:var(--muted);margin-top:1rem">Sudah punya akun? <a class="auth-link" onclick="showPage('login')">Masuk di sini</a></p>
+      <p style="text-align:center;font-size:.8rem;color:var(--muted);margin-top:.5rem"><a class="auth-link" onclick="showPage('landing')">← Kembali ke beranda</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: USER DASHBOARD ===== -->
+<div id="page-user" class="page">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="logo" onclick="showPage('landing')">NEXOS</div>
+      <ul class="sidebar-menu">
+        <li><a class="active" onclick="showUserTab('overview')"><span class="icon">⊡</span> Overview</a></li>
+        <li><a onclick="showUserTab('subscription')"><span class="icon">◈</span> Langganan</a></li>
+        <li><a onclick="showUserTab('usage')"><span class="icon">◉</span> Penggunaan</a></li>
+        <li><a onclick="showUserTab('billing')"><span class="icon">◎</span> Tagihan</a></li>
+        <li><a onclick="showUserTab('settings')"><span class="icon">◌</span> Pengaturan</a></li>
+        <li><a onclick="doLogout()" style="margin-top:2rem"><span class="icon">↩</span> Keluar</a></li>
+      </ul>
+    </aside>
+    <main class="main-content" id="userMainContent">
+      <!-- Injected by JS -->
+    </main>
+  </div>
+</div>
+
+<!-- ===== PAGE: ADMIN DASHBOARD ===== -->
+<div id="page-admin" class="page">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="logo" onclick="showPage('landing')">NEXOS</div>
+      <div style="margin-top:.5rem;font-size:.7rem;color:var(--accent-light);letter-spacing:.1em;text-transform:uppercase">Admin Panel</div>
+      <ul class="sidebar-menu">
+        <li><a class="active" onclick="showAdminTab('overview')"><span class="icon">⊡</span> Overview</a></li>
+        <li><a onclick="showAdminTab('users')"><span class="icon">◉</span> Pengguna</a></li>
+        <li><a onclick="showAdminTab('payments')"><span class="icon">◎</span> Pembayaran</a></li>
+        <li><a onclick="showAdminTab('revenue')"><span class="icon">◈</span> Pendapatan</a></li>
+        <li><a onclick="doLogout()" style="margin-top:2rem"><span class="icon">↩</span> Keluar</a></li>
+      </ul>
+    </aside>
+    <main class="main-content" id="adminMainContent">
+      <!-- Injected by JS -->
+    </main>
+  </div>
+</div>
+
+<!-- ===== PAGE: PAYMENT ===== -->
+<div id="page-payment" class="page">
+  <div class="payment-page">
+    <div class="payment-container">
+      <div style="margin-bottom:1.5rem"><a class="auth-link" onclick="showPage('landing')">← Kembali</a></div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;margin-bottom:2rem">Selesaikan Pembayaran</h1>
+      <div class="payment-steps">
+        <div class="step active"><div class="step-num">1</div><span>Detail</span></div>
+        <div class="step-sep"></div>
+        <div class="step" id="step2"><div class="step-num">2</div><span>Metode</span></div>
+        <div class="step-sep"></div>
+        <div class="step" id="step3"><div class="step-num">3</div><span>Konfirmasi</span></div>
+      </div>
+      <div class="payment-grid">
+        <div>
+          <!-- DETAIL FORM -->
+          <div class="payment-form-card" id="payFormDetail">
+            <h3>Informasi Pribadi</h3>
+            <div class="form-group"><label>Nama Lengkap</label><input type="text" id="payName" placeholder="Terisi otomatis"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="payEmail" placeholder="email@contoh.com"></div>
+            <div class="form-group"><label>Nomor Telepon</label><input type="tel" id="payPhone" placeholder="+62 812 xxxx xxxx"></div>
+            <div class="form-group"><label>Perusahaan</label><input type="text" id="payCompany" placeholder="Nama perusahaan Anda"></div>
+            <h3 style="margin-top:1.75rem">Informasi Pembayaran</h3>
+            <div class="form-group"><label>Nama Pemilik Rekening</label><input type="text" id="payAccName" placeholder="Masukkan nama sesuai rekening"></div>
+            <div class="form-group"><label>Nomor Rekening / Kartu</label><input type="text" id="payAccNum" placeholder="Masukkan nomor rekening/kartu"></div>
+            <div class="form-group"><label>Bank / Penerbit</label>
+              <select id="payBank">
+                <option value="">Pilih bank...</option>
+                <option>BCA</option><option>BNI</option><option>BRI</option><option>Mandiri</option><option>CIMB Niaga</option><option>Permata</option>
+              </select>
+            </div>
+          </div>
+          <!-- PAYMENT METHOD -->
+          <div class="payment-form-card mt-3" id="payFormMethod">
+            <h3>Pilih Metode Pembayaran</h3>
+            <div class="method-grid">
+              <div class="method-card" onclick="selectMethod('qris')"><div class="method-icon">⬛</div><div class="method-name">QRIS</div><div class="method-sub">Scan & bayar</div></div>
+              <div class="method-card" onclick="selectMethod('transfer')"><div class="method-icon">🏦</div><div class="method-name">Transfer Bank</div><div class="method-sub">BCA, BNI, BRI, Mandiri</div></div>
+              <div class="method-card" onclick="selectMethod('gopay')"><div class="method-icon">💚</div><div class="method-name">GoPay</div><div class="method-sub">Dompet digital</div></div>
+              <div class="method-card" onclick="selectMethod('ovo')"><div class="method-icon">💜</div><div class="method-name">OVO</div><div class="method-sub">Dompet digital</div></div>
+              <div class="method-card" onclick="selectMethod('dana')"><div class="method-icon">🔵</div><div class="method-name">DANA</div><div class="method-sub">Dompet digital</div></div>
+              <div class="method-card" onclick="selectMethod('credit')"><div class="method-icon">💳</div><div class="method-name">Kartu Kredit</div><div class="method-sub">Visa, Mastercard</div></div>
+            </div>
+            <div id="paymentInstructions"></div>
+            <button class="btn-gold w-full mt-3" style="padding:1rem;font-size:1rem" onclick="doPayment()">Bayar Sekarang via Midtrans</button>
+          </div>
+        </div>
+        <!-- SUMMARY -->
+        <div>
+          <div class="payment-summary" style="position:sticky;top:80px">
+            <h3>Ringkasan Pesanan</h3>
+            <div style="background:rgba(116,139,145,.06);border:1px solid rgba(116,139,145,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
+              <div style="font-size:.75rem;color:var(--accent-teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem">Paket Dipilih</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-dark)" id="sumPlanName">—</div>
+              <div style="font-size:.8rem;color:var(--text-muted);margin-top:.25rem" id="sumPlanPeriod">—</div>
+            </div>
+            <div class="summary-row"><span>Harga per bulan</span><span id="sumPrice">—</span></div>
+            <div class="summary-row"><span>Durasi</span><span id="sumDuration">—</span></div>
+            <div class="summary-row"><span>Subtotal</span><span id="sumSubtotal">—</span></div>
+            <div class="summary-row"><span>PPN 11%</span><span id="sumTax">—</span></div>
+            <div class="summary-row total"><span>Total</span><span id="sumTotal">—</span></div>
+            <div style="margin-top:1rem;padding:.75rem;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:10px;font-size:.8rem;color:#16a34a">✓ Pembayaran aman dengan Midtrans SSL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== APP STATE =====
+const APP = {
+  currentPage: 'landing',
+  currentUser: null,
+  selectedPlan: null,
+  selectedMethod: null,
+  db: {
+    users: [
+      {id:1,email:'admin@nexos.ai',pass:'admin123',name:'Aulia Anggi Rakha',phone:'+62812000001',company:'Nexos',role:'admin',plan:'Nexos Chat Enterprise',planTier:3,planPrice:1999000,planMonths:12,startDate:'2025-01-01',endDate:'2025-12-31'},
+      {id:2,email:'user@demo.com',pass:'demo123',name:'Budi Santoso',phone:'+62812000002',company:'PT Maju',role:'user',plan:'Nexos Chat Pro',planTier:2,planPrice:799000,planMonths:6,startDate:'2025-06-01',endDate:'2025-11-30'},
+      {id:3,email:'starter@demo.com',pass:'demo123',name:'Citra Dewi',phone:'+62812000003',company:'CV Berkah',role:'user',plan:'Nexos Analytics Lite',planTier:1,planPrice:399000,planMonths:3,startDate:'2025-08-01',endDate:'2025-10-31'},
+    ]
+  }
+};
+
+// ===== PAGE ROUTING =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  APP.currentPage = page;
+  window.scrollTo(0,0);
+  if(page==='landing'){
+    document.getElementById('navbar').style.display='';
+    initSpiralIfNeeded();
+    initFeatureScroll();
+  } else {
+    document.getElementById('navbar').style.display=(page==='user'||page==='admin')?'':'flex';
+  }
+  if(page==='user') renderUserDashboard();
+  if(page==='admin') renderAdminDashboard();
+  if(page==='payment') fillPaymentForm();
+}
+
+function scrollToSection(id) {
+  if(APP.currentPage!=='landing') showPage('landing');
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  },100);
+}
+
+// ===== AUTH =====
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if(!email||!pass){showAlert('loginAlert','Isi email dan password.','error');return;}
+  const user = APP.db.users.find(u=>u.email===email&&u.pass===pass);
+  if(!user){showAlert('loginAlert','Email atau password salah.','error');return;}
+  APP.currentUser = user;
+  showPage(user.role==='admin'?'admin':'user');
+}
+
+function doRegister() {
+  const fn=document.getElementById('regFirstName').value.trim();
+  const ln=document.getElementById('regLastName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const phone=document.getElementById('regPhone').value.trim();
+  const company=document.getElementById('regCompany').value.trim();
+  const pass=document.getElementById('regPass').value;
+  const pc=document.getElementById('regPassConfirm').value;
+  if(!fn||!email||!pass){showAlert('registerAlert','Lengkapi semua field wajib.','error');return;}
+  if(pass!==pc){showAlert('registerAlert','Password tidak cocok.','error');return;}
+  if(pass.length<8){showAlert('registerAlert','Password minimal 8 karakter.','error');return;}
+  if(APP.db.users.find(u=>u.email===email)){showAlert('registerAlert','Email sudah terdaftar.','error');return;}
+  const newUser={id:Date.now(),email,pass,name:fn+' '+ln,phone,company,role:'user',plan:null,planTier:0,planPrice:0,planMonths:0,startDate:null,endDate:null};
+  APP.db.users.push(newUser);
+  APP.currentUser=newUser;
+  showAlert('registerAlert','Akun berhasil dibuat!','success');
+  setTimeout(()=>showPage('user'),1200);
+}
+
+function doLogout(){APP.currentUser=null;showPage('landing');}
+
+function showForgotModal(){document.getElementById('forgotModal').classList.add('show');}
+function closeForgotModal(){document.getElementById('forgotModal').classList.remove('show');}
+function doForgotPassword(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  if(!email){showAlert('forgotAlert','Masukkan email Anda.','error');return;}
+  const exists=APP.db.users.find(u=>u.email===email);
+  if(!exists){showAlert('forgotAlert','Email tidak ditemukan.','error');return;}
+  showAlert('forgotAlert','Tautan reset telah dikirim ke '+email,'success');
+  setTimeout(closeForgotModal,2000);
+}
+
+// ===== ALERTS =====
+function showAlert(id,msg,type){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML=`<div class="alert alert-${type}">${msg}</div>`;
+}
+function clearAlert(id){const el=document.getElementById(id);if(el)el.innerHTML='';}
+
+// ===== CATALOG TABS =====
+function switchTab(name){
+  document.querySelectorAll('.catalog-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== PLAN SELECTION =====
+function selectPlan(name,price,months){
+  APP.selectedPlan={name,price:parseInt(price),months:parseInt(months)};
+  if(!APP.currentUser){showPage('login');return;}
+  showPage('payment');
+}
+
+// ===== PAYMENT PAGE =====
+function fillPaymentForm(){
+  const u=APP.currentUser||{name:'',email:'',phone:'',company:''};
+  document.getElementById('payName').value=u.name||'';
+  document.getElementById('payEmail').value=u.email||'';
+  document.getElementById('payPhone').value=u.phone||'';
+  document.getElementById('payCompany').value=u.company||'';
+  updatePaymentSummary();
+}
+
+function updatePaymentSummary(){
+  const p=APP.selectedPlan;
+  if(!p){return;}
+  const sub=p.price*p.months;
+  const tax=Math.round(sub*.11);
+  const total=sub+tax;
+  document.getElementById('sumPlanName').textContent=p.name;
+  document.getElementById('sumPlanPeriod').textContent=p.months+' bulan berlangganan';
+  document.getElementById('sumPrice').textContent='Rp '+p.price.toLocaleString('id');
+  document.getElementById('sumDuration').textContent=p.months+' bulan';
+  document.getElementById('sumSubtotal').textContent='Rp '+sub.toLocaleString('id');
+  document.getElementById('sumTax').textContent='Rp '+tax.toLocaleString('id');
+  document.getElementById('sumTotal').textContent='Rp '+total.toLocaleString('id');
+}
+
+function selectMethod(method){
+  APP.selectedMethod=method;
+  document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  document.getElementById('step2').classList.add('active');
+  const inst=document.getElementById('paymentInstructions');
+  const methods={
+    qris:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">🔲 Bayar dengan QRIS</h4>
+      <div class="qris-box"><div class="qris-code">⬛</div><p style="font-size:.8rem;color:var(--muted)">Scan QR code ini dengan aplikasi dompet digital Anda</p><p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">GoPay · OVO · DANA · LinkAja · ShopeePay</p></div>
+      <div class="instruction-step mt-3"><span>1.</span> Buka aplikasi dompet digital Anda</div>
+      <div class="instruction-step"><span>2.</span> Pilih menu "Scan QR" atau "QRIS"</div>
+      <div class="instruction-step"><span>3.</span> Arahkan kamera ke QR code di atas</div>
+      <div class="instruction-step"><span>4.</span> Verifikasi jumlah dan konfirmasi pembayaran</div>
+      <div class="instruction-step"><span>5.</span> Simpan bukti transaksi</div></div>`,
+    transfer:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">🏦 Transfer Bank</h4>
+      <div style="background:rgba(116,139,145,.06);border:1px solid rgba(116,139,145,.2);border-radius:10px;padding:1rem;margin-bottom:.75rem">
+        <div style="font-size:.75rem;color:var(--text-muted)">Virtual Account BCA</div>
+        <div style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;letter-spacing:.1em;color:var(--accent-teal)">8277 0000 1234 5678</div>
+        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">a/n NEXOS INDONESIA</div>
+      </div>
+      <div class="instruction-step"><span>1.</span> Buka m-Banking atau ATM pilihan Anda</div>
+      <div class="instruction-step"><span>2.</span> Pilih Transfer → Virtual Account</div>
+      <div class="instruction-step"><span>3.</span> Masukkan nomor Virtual Account di atas</div>
+      <div class="instruction-step"><span>4.</span> Konfirmasi jumlah transfer sesuai total tagihan</div>
+      <div class="instruction-step"><span>5.</span> Selesaikan transaksi dan simpan bukti transfer</div></div>`,
+    gopay:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">💚 Bayar dengan GoPay</h4>
+      <div class="instruction-step"><span>1.</span> Buka aplikasi Gojek di smartphone Anda</div>
+      <div class="instruction-step"><span>2.</span> Pastikan saldo GoPay mencukupi</div>
+      <div class="instruction-step"><span>3.</span> Klik "Bayar Sekarang" dan Anda akan diarahkan ke GoPay</div>
+      <div class="instruction-step"><span>4.</span> Masukkan PIN GoPay untuk konfirmasi</div>
+      <div class="instruction-step"><span>5.</span> Transaksi selesai, status akan diperbarui otomatis</div></div>`,
+    ovo:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">💜 Bayar dengan OVO</h4>
+      <div class="instruction-step"><span>1.</span> Buka aplikasi OVO di smartphone Anda</div>
+      <div class="instruction-step"><span>2.</span> Pastikan saldo OVO Cash mencukupi</div>
+      <div class="instruction-step"><span>3.</span> Klik "Bayar Sekarang" — notifikasi push akan muncul di OVO</div>
+      <div class="instruction-step"><span>4.</span> Buka notifikasi dan konfirmasi pembayaran</div>
+      <div class="instruction-step"><span>5.</span> Transaksi selesai dalam hitungan detik</div></div>`,
+    dana:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">🔵 Bayar dengan DANA</h4>
+      <div class="instruction-step"><span>1.</span> Buka aplikasi DANA di smartphone Anda</div>
+      <div class="instruction-step"><span>2.</span> Pastikan saldo DANA mencukupi</div>
+      <div class="instruction-step"><span>3.</span> Klik "Bayar Sekarang" dan ikuti instruksi di DANA</div>
+      <div class="instruction-step"><span>4.</span> Konfirmasi pembayaran dengan PIN atau biometrik</div>
+      <div class="instruction-step"><span>5.</span> Bukti transaksi dikirim ke email Anda</div></div>`,
+    credit:`<div class="payment-instructions"><h4 style="margin-bottom:.75rem">💳 Kartu Kredit / Debit</h4>
+      <div class="instruction-step"><span>1.</span> Klik "Bayar Sekarang" untuk membuka form Midtrans</div>
+      <div class="instruction-step"><span>2.</span> Masukkan nomor kartu kredit/debit Anda</div>
+      <div class="instruction-step"><span>3.</span> Isi tanggal kadaluarsa dan CVV</div>
+      <div class="instruction-step"><span>4.</span> Masukkan kode OTP yang dikirim ke HP Anda</div>
+      <div class="instruction-step"><span>5.</span> Pembayaran berhasil, akun diaktifkan otomatis</div></div>`
+  };
+  inst.innerHTML=methods[method]||'';
+}
+
+function doPayment(){
+  if(!APP.selectedMethod){alert('Pilih metode pembayaran terlebih dahulu.');return;}
+  const p=APP.selectedPlan;
+  if(!p){alert('Pilih paket terlebih dahulu.');return;}
+  const sub=p.price*p.months;
+  const tax=Math.round(sub*.11);
+  const total=sub+tax;
+  // Midtrans Snap
+  const orderId='NEXOS-'+Date.now();
+  fetch('https://'+window.location.hostname.replace('localhost','100.76.68.2')+':3000/payment/token',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({order_id:orderId,gross_amount:total,customer_name:document.getElementById('payName').value,customer_email:document.getElementById('payEmail').value,customer_phone:document.getElementById('payPhone').value,plan_name:p.name})
+  }).then(r=>r.json()).then(data=>{
+    if(data.token){
+      window.snap.pay(data.token,{
+        onSuccess:(result)=>handlePaymentSuccess(result),
+        onPending:(result)=>handlePaymentPending(result),
+        onError:(result)=>alert('Pembayaran gagal: '+result.status_message),
+        onClose:()=>console.log('Midtrans closed')
+      });
+    }
+  }).catch(()=>{
+    // Demo fallback
+    document.getElementById('step3').classList.add('active');
+    simulatePaymentSuccess();
+  });
+}
+
+function simulatePaymentSuccess(){
+  const p=APP.selectedPlan;
+  const u=APP.currentUser;
+  const start=new Date();
+  const end=new Date(start);
+  end.setMonth(end.getMonth()+p.months);
+  if(u){
+    u.plan=p.name;u.planPrice=p.price;u.planMonths=p.months;
+    u.startDate=start.toISOString().slice(0,10);
+    u.endDate=end.toISOString().slice(0,10);
+    u.planTier=p.price<500000?1:p.price<1500000?2:3;
+  }
+  alert('✅ Pembayaran berhasil!\n\nPaket: '+p.name+'\nAktif hingga: '+end.toLocaleDateString('id-ID'));
+  showPage('user');
+}
+
+function handlePaymentSuccess(result){simulatePaymentSuccess();}
+function handlePaymentPending(result){alert('Pembayaran pending. Selesaikan pembayaran Anda.');}
+
+// ===== CONTACT FORM =====
+function submitContact(){
+  const name=document.getElementById('contactName').value.trim();
+  const email=document.getElementById('contactEmail').value.trim();
+  const msg=document.getElementById('contactMsg').value.trim();
+  if(!name||!email||!msg){showAlert('contactAlert','Lengkapi semua field.','error');return;}
+  showAlert('contactAlert','Pesan Anda telah terkirim! Kami akan menghubungi Anda dalam 1x24 jam.','success');
+  document.getElementById('contactName').value='';
+  document.getElementById('contactEmail').value='';
+  document.getElementById('contactMsg').value='';
+}
+
+// ===== USER DASHBOARD =====
+function renderUserDashboard(){
+  const u=APP.currentUser;
+  if(!u){showPage('login');return;}
+  showUserTab('overview');
+}
+
+function showUserTab(tab){
+  const u=APP.currentUser;
+  if(!u) return;
+  document.querySelectorAll('.sidebar-menu a').forEach(a=>a.classList.remove('active'));
+  const mc=document.getElementById('userMainContent');
+  const now=new Date();
+  const tierLabel=['','Starter','Pro','Enterprise'];
+  const tierClass=['','tier-starter','tier-pro','tier-enterprise'];
+  const tierColor=['','#6b7280','#D4AF37','#7c3aed'];
+
+  if(tab==='overview'){
+    let countdown='';
+    let progress=0;
+    if(u.endDate){
+      const end=new Date(u.endDate);
+      const start=new Date(u.startDate);
+      const diff=end-now;
+      const total=end-start;
+      progress=Math.max(0,Math.min(100,100-(diff/total*100)));
+      const days=Math.max(0,Math.floor(diff/(1000*60*60*24)));
+      const hrs=Math.max(0,Math.floor((diff%(1000*60*60*24))/(1000*60*60)));
+      const mins=Math.max(0,Math.floor((diff%(1000*60*60))/(1000*60)));
+      countdown=`<div class="countdown-ring">
+        <div class="count-unit"><div class="count-num">${days}</div><div class="count-label">Hari</div></div>
+        <div class="count-unit"><div class="count-num">${hrs}</div><div class="count-label">Jam</div></div>
+        <div class="count-unit"><div class="count-num">${mins}</div><div class="count-label">Menit</div></div>
+      </div>`;
+    }
+    const planFeats={
+      1:['1 Channel','1K percakapan/bln','Template bawaan','Dashboard dasar'],
+      2:['3 Channel multi-platform','10K percakapan/bln','NLP Custom','Integrasi API','Analytics lanjutan','Support 24/7'],
+      3:['Unlimited channel','Unlimited percakapan','Model AI khusus','On-premise','SLA 99.9%','Account manager dedikasi']
+    };
+    const feats=(planFeats[u.planTier]||[]).map(f=>`<span class="mini-tag">${f}</span>`).join('');
+    mc.innerHTML=`
+      <div class="content-header"><h1>Halo, ${u.name.split(' ')[0]}! 👋</h1><p>Berikut ringkasan akun dan langganan Anda saat ini.</p></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Status Akun</div><div class="stat-val" style="color:#16a34a;font-size:1.25rem">● Aktif</div><div class="stat-sub">${u.email}</div></div>
+        <div class="stat-card"><div class="stat-label">Paket Aktif</div><div class="stat-val" style="font-size:1.1rem">${u.plan||'Belum berlangganan'}</div><div class="stat-sub">${u.planTier?tierLabel[u.planTier]+' Tier':''}</div></div>
+        <div class="stat-card"><div class="stat-label">Masa Berlangganan</div><div class="stat-val">${u.planMonths||0}<span style="font-size:1rem;color:var(--muted)"> bln</span></div><div class="stat-sub">${u.startDate?u.startDate+' — '+u.endDate:''}</div></div>
+        <div class="stat-card"><div class="stat-label">Perusahaan</div><div class="stat-val" style="font-size:1.1rem">${u.company||'—'}</div><div class="stat-sub">${u.phone||''}</div></div>
+      </div>
+      ${u.plan?`<div class="subscription-card ${tierClass[u.planTier]}">
+        <div class="sub-tier-badge">${tierLabel[u.planTier]?.toUpperCase()||''} TIER</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.25rem">${u.plan}</h2>
+        <p style="color:var(--muted);font-size:.875rem">Berlangganan ${u.planMonths} bulan · Rp ${u.planPrice?.toLocaleString('id')}/bulan</p>
+        <div style="margin-top:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          <div><div style="font-size:.75rem;color:var(--muted)">Mulai</div><div style="font-weight:600">${u.startDate}</div></div>
+          <div style="flex:1;text-align:center;font-size:2rem">→</div>
+          <div><div style="font-size:.75rem;color:var(--text-muted)">Berakhir</div><div style="font-weight:600;color:var(--accent-teal)">${u.endDate}</div></div>
+        </div>
+        <div class="progress-bar mt-3"><div class="progress-fill" style="width:${progress.toFixed(0)}%"></div></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.5rem">${(100-progress).toFixed(0)}% masa berlangganan tersisa</div>
+        <div style="margin-top:1.25rem"><div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem">Hitung mundur masa berakhir:</div>${countdown}</div>
+        <div style="margin-top:1.25rem"><div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem">Fitur yang Anda dapatkan:</div><div class="plan-features-mini">${feats}</div></div>
+      </div>`:`<div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3rem;text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">🚀</div>
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.25rem;margin-bottom:.5rem;color:var(--text-dark)">Belum Ada Langganan Aktif</h3>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem">Pilih paket yang sesuai untuk mulai menggunakan Nexos AI Platform</p>
+        <button class="btn-gold" onclick="showPage('landing');scrollToSection('catalog')">Lihat Paket</button>
+      </div>`}`;
+  }
+}
+
+// ===== ADMIN DASHBOARD =====
+function renderAdminDashboard(){
+  const u=APP.currentUser;
+  if(!u||u.role!=='admin'){showPage('login');return;}
+  showAdminTab('overview');
+  updateAdminClock();
+  setInterval(updateAdminClock,1000);
+}
+
+function updateAdminClock(){
+  const el=document.getElementById('adminClock');
+  if(el) el.textContent=new Date().toLocaleString('id-ID',{weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function showAdminTab(tab){
+  const u=APP.currentUser;
+  if(!u) return;
+  document.querySelectorAll('.sidebar-menu a').forEach(a=>a.classList.remove('active'));
+  const mc=document.getElementById('adminMainContent');
+  const allUsers=APP.db.users.filter(x=>x.role==='user');
+  const totalRevenue=allUsers.reduce((s,x)=>s+(x.planPrice*x.planMonths||0),0);
+
+  if(tab==='overview'){
+    mc.innerHTML=`
+      <div class="content-header">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+          <div><h1>Admin Dashboard</h1><p>Halo, ${u.name} — Berikut ringkasan platform Nexos.</p></div>
+          <div class="datetime-display" id="adminClock"></div>
+        </div>
+      </div>
+      <div class="admin-grid">
+        <div class="stat-card"><div class="stat-label">Total Pengguna</div><div class="stat-val">${APP.db.users.length}</div><div class="stat-sub">+3 bulan ini</div></div>
+        <div class="stat-card"><div class="stat-label">Langganan Aktif</div><div class="stat-val">${allUsers.filter(x=>x.plan).length}</div><div class="stat-sub">dari ${allUsers.length} user</div></div>
+        <div class="stat-card"><div class="stat-label">Total Pendapatan</div><div class="stat-val" style="font-size:1.3rem">Rp ${totalRevenue.toLocaleString('id')}</div><div class="stat-sub">Semua paket aktif</div></div>
+        <div class="stat-card"><div class="stat-label">Uptime SLA</div><div class="stat-val" style="color:#16a34a">98.7%</div><div class="stat-sub">30 hari terakhir</div></div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-title">Pendapatan Bulanan 2025
+          <div class="time-filters">
+            <button class="tf-btn active">6 Bln</button>
+            <button class="tf-btn" onclick="">1 Thn</button>
+          </div>
+        </div>
+        ${[['Jul','1.2M',48],['Agu','1.8M',72],['Sep','2.1M',84],['Okt','2.4M',96],['Nov','2.7M',100],['Des','3.1M',100]].map(([m,v,w])=>`
+        <div class="chart-bar-row">
+          <div class="chart-month">${m}</div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="width:${w}%">Rp ${v}</div></div>
+          <div class="chart-val">Rp ${v}</div>
+        </div>`).join('')}
+      </div>
+      <div class="admin-table">
+        <div class="admin-table-header"><h3>Pengguna Terbaru</h3></div>
+        <table><thead><tr><th>Nama</th><th>Email</th><th>Paket</th><th>Status</th></tr></thead><tbody>
+        ${APP.db.users.map(x=>`<tr>
+          <td><strong>${x.name}</strong><div style="font-size:.75rem;color:var(--muted)">${x.company||''}</div></td>
+          <td style="color:var(--muted)">${x.email}</td>
+          <td>${x.plan||'—'}</td>
+          <td><span class="badge ${x.plan?'badge-active':'badge-pending'}">${x.plan?'Aktif':'Belum berlangganan'}</span></td>
+        </tr>`).join('')}
+        </tbody></table>
+      </div>`;
+    setTimeout(updateAdminClock,100);
+  }
+
+  if(tab==='users'){
+    mc.innerHTML=`
+      <div class="content-header"><h1>Manajemen Pengguna</h1><p>Kelola semua pengguna platform Nexos.</p></div>
+      <div class="search-bar">
+        <input type="text" id="userSearch" placeholder="🔍 Cari berdasarkan nama, email, atau perusahaan..." oninput="filterUsers()">
+        <button class="btn-gold" onclick="filterUsers()">Cari</button>
+      </div>
+      <div class="admin-table" id="usersTable">
+        <table><thead><tr><th>Nama / Perusahaan</th><th>Email</th><th>Telepon</th><th>Paket</th><th>Durasi</th><th>Mulai</th><th>Berakhir</th><th>Status</th></tr></thead>
+        <tbody id="usersBody">${renderUsersRows(APP.db.users)}</tbody></table>
+      </div>`;
+  }
+
+  if(tab==='payments'){
+    const paidUsers=APP.db.users.filter(x=>x.plan);
+    mc.innerHTML=`
+      <div class="content-header"><h1>Riwayat Pembayaran</h1><p>Detail transaksi dan langganan pengguna.</p></div>
+      <div class="admin-table">
+        <table><thead><tr><th>Order ID</th><th>Pengguna</th><th>Paket</th><th>Jumlah/bln</th><th>Durasi</th><th>Total</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>
+        ${paidUsers.map((x,i)=>{
+          const total=x.planPrice*x.planMonths;
+          const tax=Math.round(total*.11);
+          return `<tr>
+            <td style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--accent-teal)">NEXOS-00${i+1}</td>
+            <td><strong>${x.name}</strong><div style="font-size:.72rem;color:var(--muted)">${x.email}</div></td>
+            <td>${x.plan}</td>
+            <td>Rp ${x.planPrice?.toLocaleString('id')}</td>
+            <td>${x.planMonths} bulan</td>
+            <td style="font-weight:600;color:var(--accent-teal)">Rp ${(total+tax).toLocaleString('id')}</td>
+            <td style="color:var(--muted)">${x.startDate||'—'}</td>
+            <td><span class="badge badge-active">Lunas</span></td>
+          </tr>`;}).join('')}
+        </tbody></table>
+      </div>`;
+  }
+
+  if(tab==='revenue'){
+    mc.innerHTML=`
+      <div class="content-header">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+          <div><h1>Laporan Pendapatan</h1><p>Analitik pendapatan platform Nexos.</p></div>
+          <div class="datetime-display" id="adminClock"></div>
+        </div>
+      </div>
+      <div class="admin-grid">
+        <div class="stat-card"><div class="stat-label">Pendapatan Bulan Ini</div><div class="stat-val" style="font-size:1.3rem">Rp 3.1M</div><div class="stat-sub">↑ 14.8% vs bulan lalu</div></div>
+        <div class="stat-card"><div class="stat-label">ARR (Annual Recurring)</div><div class="stat-val" style="font-size:1.3rem">Rp 37.2M</div><div class="stat-sub">Proyeksi tahunan</div></div>
+        <div class="stat-card"><div class="stat-label">Avg. Revenue/User</div><div class="stat-val" style="font-size:1.3rem">Rp 1.1M</div><div class="stat-sub">per pengguna aktif</div></div>
+        <div class="stat-card"><div class="stat-label">Churn Rate</div><div class="stat-val" style="color:#22c55e">1.3%</div><div class="stat-sub">30 hari terakhir</div></div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-title">Pendapatan per Kategori Produk</div>
+        ${[['AI Chatbot','52%',52],['Data Analytics','28%',28],['Vision AI','20%',20]].map(([n,v,w])=>`
+        <div class="chart-bar-row">
+          <div class="chart-month" style="width:100px">${n}</div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="width:${w}%">${v}</div></div>
+          <div class="chart-val">${v}</div>
+        </div>`).join('')}
+      </div>
+      <div class="chart-area">
+        <div class="chart-title">Distribusi Tier Langganan</div>
+        ${[['Starter','1 user',33],['Pro','1 user',33],['Enterprise','1 user',33]].map(([n,v,w])=>`
+        <div class="chart-bar-row">
+          <div class="chart-month" style="width:80px">${n}</div>
+          <div class="chart-bar-wrap"><div class="chart-bar" style="width:${w}%">${v}</div></div>
+          <div class="chart-val">${v}</div>
+        </div>`).join('')}
+      </div>`;
+    setTimeout(updateAdminClock,100);
+  }
+}
+
+function renderUsersRows(users){
+  return users.map(x=>`<tr>
+    <td><strong>${x.name}</strong><div style="font-size:.72rem;color:var(--muted)">${x.company||''}</div></td>
+    <td style="color:var(--muted)">${x.email}</td>
+    <td style="color:var(--muted)">${x.phone||'—'}</td>
+    <td>${x.plan||'—'}</td>
+    <td>${x.planMonths?x.planMonths+' bulan':'—'}</td>
+    <td>${x.startDate||'—'}</td>
+    <td style="${x.endDate?'color:var(--accent-teal)':''}">${x.endDate||'—'}</td>
+    <td><span class="badge ${x.plan?'badge-active':'badge-pending'}">${x.plan?'Aktif':'Belum berlangganan'}</span></td>
+  </tr>`).join('');
+}
+
+function filterUsers(){
+  const q=(document.getElementById('userSearch')?.value||'').toLowerCase();
+  const filtered=APP.db.users.filter(u=>u.name.toLowerCase().includes(q)||u.email.includes(q)||(u.company||'').toLowerCase().includes(q));
+  const body=document.getElementById('usersBody');
+  if(body) body.innerHTML=renderUsersRows(filtered);
+}
+
+// ===== FEATURE SCROLL CHOREOGRAPHY =====
+const featureData=[
+  {num:'01',title:'Chatbot AI Cerdas',desc:'Layani pelanggan 24/7 dengan chatbot berbasis NLP canggih yang memahami konteks, belajar dari setiap interaksi, dan menjawab dalam Bahasa Indonesia secara natural.',tags:['NLP','Multi-channel','Auto-learning'],img:'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80'},
+  {num:'02',title:'Analitik Data Prediktif',desc:'Ubah data mentah menjadi insight bisnis yang actionable. Model prediktif berbasis machine learning membantu Anda mengantisipasi tren dan mengambil keputusan yang lebih cerdas.',tags:['Machine Learning','Forecasting','Real-time'],img:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80'},
+  {num:'03',title:'Vision AI Terintegrasi',desc:'Otomasi pengenalan gambar, verifikasi dokumen, dan analisis video dengan akurasi tinggi. Dari OCR hingga face recognition, semuanya dalam satu platform.',tags:['Computer Vision','OCR','Face Recognition'],img:'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=900&q=80'},
+  {num:'04',title:'Cloud Infrastructure Aman',desc:'Infrastruktur cloud enterprise-grade dengan enkripsi end-to-end, multi-region deployment, dan SLA 99.9% uptime. Data Anda aman, terlindungi, dan selalu tersedia.',tags:['Cloud Native','ISO 27001','Multi-region'],img:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'},
+];
+
+let featureScrollInited=false;
+function initFeatureScroll(){
+  if(featureScrollInited) return;
+  featureScrollInited=true;
+  const track=document.getElementById('featureSticky').parentElement;
+  window.addEventListener('scroll',()=>{
+    const rect=track.getBoundingClientRect();
+    const trackHeight=track.offsetHeight;
+    const viewH=window.innerHeight;
+    if(rect.top>viewH||rect.bottom<0) return;
+    const scrolled=Math.max(0,-rect.top);
+    const totalScrollable=trackHeight-viewH;
+    const progress=scrolled/totalScrollable;
+    const idx=Math.min(featureData.length-1,Math.floor(progress*featureData.length));
+    const f=featureData[idx];
+    if(f){
+      const img=document.getElementById('featureImg');
+      const curSrc=img.src;
+      if(!curSrc.includes(f.img.split('?')[0].split('/').pop())){
+        img.style.opacity=0;
+        setTimeout(()=>{img.src=f.img;img.style.opacity=1;},300);
+      }
+      document.getElementById('featNum').textContent=f.num;
+      document.getElementById('featTitle').textContent=f.title;
+      document.getElementById('featDesc').textContent=f.desc;
+      document.getElementById('featTags').innerHTML=f.tags.map(t=>`<span class="feat-tag">${t}</span>`).join('');
+    }
+  });
+}
+
+// ===== THREE.JS SPIRAL (HERO BG) =====
+let heroRenderer, heroScene, heroCamera, heroMesh;
+function initHeroThree(){
+  const canvas=document.getElementById('webgl-canvas');
+  heroRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  heroRenderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  heroScene=new THREE.Scene();
+  heroCamera=new THREE.PerspectiveCamera(75,canvas.clientWidth/canvas.clientHeight,0.1,100);
+  heroCamera.position.z=3;
+  const geo=new THREE.TorusKnotGeometry(1,.3,128,16);
+  const mat=new THREE.MeshPhongMaterial({color:0x748B91,wireframe:true,opacity:.18,transparent:true});
+  heroMesh=new THREE.Mesh(geo,mat);
+  heroScene.add(heroMesh);
+  const al=new THREE.AmbientLight(0xffffff,.5);
+  heroScene.add(al);
+  animateHero();
+}
+function animateHero(){
+  requestAnimationFrame(animateHero);
+  if(heroMesh){heroMesh.rotation.x+=.003;heroMesh.rotation.y+=.005;}
+  if(heroRenderer) heroRenderer.render(heroScene,heroCamera);
+}
+
+// ===== THREE.JS SPIRAL SOCIAL PROOF =====
+const spiralImageUrls=[
+  'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80',
+  'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+  'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=800&q=80',
+  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
+  'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
+  'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&q=80',
+  'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
+  'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&q=80',
+  'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80',
+  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
+  'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80',
+  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80',
+];
+
+let spiralInited=false;
+let spiralScene,spiralCamera,spiralRenderer,spiralMesh,spiralMat,spiralScrollOff=0,spiralTargetVel=0,spiralCurVel=0;
+
+function initSpiralIfNeeded(){
+  const sec=document.getElementById('socialProof');
+  if(!sec) return;
+  const obs=new IntersectionObserver((entries)=>{
+    if(entries[0].isIntersecting&&!spiralInited){spiralInited=true;initSpiral();}
+  },{threshold:.1});
+  obs.observe(sec);
+}
+
+async function initSpiral(){
+  const canvas=document.getElementById('spiral-canvas');
+  if(!canvas||!THREE) return;
+  spiralScene=new THREE.Scene();spiralScene.background=new THREE.Color(0xF4F7F6);
+  spiralCamera=new THREE.PerspectiveCamera(50,canvas.clientWidth/canvas.clientHeight,.1,1000);
+  spiralCamera.position.set(0,3.5,9);
+  spiralRenderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  spiralRenderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  const tiltGroup=new THREE.Group();
+  tiltGroup.rotation.x=-0.18;tiltGroup.rotation.z=0.12;
+  spiralScene.add(tiltGroup);
+  const tex=await buildSpiralTexture();
+  spiralMat=new THREE.ShaderMaterial({uniforms:{map:{value:tex},offset:{value:0}},
+    vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform sampler2D map;uniform float offset;varying vec2 vUv;void main(){float u=fract(vUv.x+offset);gl_FragColor=texture2D(map,vec2(u,vUv.y));}`,
+    transparent:true,side:THREE.DoubleSide});
+  const N=spiralImageUrls.length;const turns=2.8;const height=12;const radius=3.5;
+  const segW=400;const segH=24;const totalW=35;
+  const geo=new THREE.PlaneGeometry(totalW,7,segW,segH);
+  const pos=geo.attributes.position;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i);const y=pos.getY(i);
+    const t=(x+totalW/2)/totalW;
+    const angle=t*Math.PI*2*turns;
+    const r=radius*(1-t*.12);
+    pos.setXYZ(i,Math.sin(angle)*r,(t-.5)*height+y*.35,Math.cos(angle)*r);
+  }
+  geo.computeVertexNormals();
+  spiralMesh=new THREE.Mesh(geo,spiralMat);
+  spiralMesh.position.set(-2,4.38,0);
+  tiltGroup.add(spiralMesh);
+  canvas.addEventListener('wheel',(e)=>{e.preventDefault();spiralTargetVel+=e.deltaY*.0008},{passive:false});
+  let isDrag=false,prevX=0,prevY=0;
+  canvas.addEventListener('mousedown',(e)=>{isDrag=true;prevX=e.clientX;prevY=e.clientY;});
+  window.addEventListener('mousemove',(e)=>{if(!isDrag)return;tiltGroup.rotation.z+=(e.clientX-prevX)*.002;tiltGroup.rotation.x-=(e.clientY-prevY)*.002;prevX=e.clientX;prevY=e.clientY;});
+  window.addEventListener('mouseup',()=>isDrag=false);
+  animateSpiral();
+}
+
+function buildSpiralTexture(){
+  return new Promise(resolve=>{
+    const canvas=document.createElement('canvas');
+    const ctx=canvas.getContext('2d');
+    const h=500;let loaded=0;const imgs=[];
+    spiralImageUrls.forEach((url,i)=>{
+      const img=new Image();img.crossOrigin='Anonymous';
+      img.onload=()=>{
+        const w=Math.round(img.naturalWidth/img.naturalHeight*h);
+        imgs[i]={img,w};loaded++;
+        if(loaded===spiralImageUrls.length){
+          const total=imgs.reduce((s,x)=>s+x.w,0);
+          canvas.width=total;canvas.height=h;ctx.fillStyle='#000';ctx.fillRect(0,0,total,h);
+          let ox=0;imgs.forEach(({img:im,w})=>{ctx.drawImage(im,ox,0,w,h);ox+=w;});
+          const t=new THREE.CanvasTexture(canvas);
+          t.wrapS=THREE.RepeatWrapping;t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;
+          resolve(t);
+        }
+      };
+      img.onerror=()=>{imgs[i]={img:null,w:400};loaded++;if(loaded===spiralImageUrls.length){resolve(new THREE.CanvasTexture(canvas));}};
+      img.src=url;
+    });
+  });
+}
+
+function animateSpiral(){
+  requestAnimationFrame(animateSpiral);
+  spiralTargetVel*=.94;spiralCurVel=spiralCurVel*.85+spiralTargetVel*.15;
+  if(Math.abs(spiralCurVel)>.0001){spiralScrollOff+=spiralCurVel;if(spiralMat)spiralMat.uniforms.offset.value=((spiralScrollOff%1)+1)%1;}
+  if(spiralRenderer&&spiralScene&&spiralCamera) spiralRenderer.render(spiralScene,spiralCamera);
+}
+
+// ===== ORBIT CARD STACK =====
+const orbitPlans=[
+  {name:'Nexos Starter',role:'Paket Awal',desc:'Cocok untuk startup dan bisnis kecil yang baru memulai perjalanan AI mereka.',stat:'Basic AI',badge:'ST',accent:'#6b7280'},
+  {name:'Nexos Pro',role:'Paket Profesional',desc:'Solusi lengkap untuk bisnis berkembang dengan kebutuhan AI yang lebih kompleks.',stat:'Pro AI',badge:'PR',accent:'#D4AF37'},
+  {name:'Nexos Enterprise',role:'Paket Enterprise',desc:'Platform penuh skala enterprise dengan dedicated support dan custom AI model.',stat:'Enterprise',badge:'EN',accent:'#7c3aed'},
+];
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded',()=>{
+  initHeroThree();
+  initSpiralIfNeeded();
+  initFeatureScroll();
+  window.addEventListener('resize',()=>{
+    if(heroRenderer){
+      const c=document.getElementById('webgl-canvas');
+      if(c){heroRenderer.setSize(c.clientWidth,c.clientHeight);heroCamera.aspect=c.clientWidth/c.clientHeight;heroCamera.updateProjectionMatrix();}
+    }
+    if(spiralRenderer){
+      const c=document.getElementById('spiral-canvas');
+      if(c){spiralRenderer.setSize(c.clientWidth,c.clientHeight);spiralCamera.aspect=c.clientWidth/c.clientHeight;spiralCamera.updateProjectionMatrix();}
+    }
+  });
+  // Fullscreen btn
+  (function(){
+    const btn=document.createElement('button');
+    Object.assign(btn.style,{position:'fixed',bottom:'20px',right:'20px',width:'44px',height:'44px',borderRadius:'50%',background:'rgba(0,0,0,.6)',backdropFilter:'blur(10px)',border:'1px solid rgba(255,255,255,.2)',color:'white',cursor:'pointer',zIndex:'1000',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1rem'});
+    btn.innerHTML='⛶';
+    btn.onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{});};
+    document.body.appendChild(btn);
+  })();
+});
+</script>
+</body>
+</html>
